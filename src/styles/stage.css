@@ -1,0 +1,202 @@
+.stage {
+  position: relative;
+  background: var(--n-1);
+  overflow: hidden;
+  isolation: isolate;
+}
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(208, 206, 198, 0.18) 100%),
+    radial-gradient(circle at 20% 20%, rgba(197, 100, 115, 0.025), transparent 40%);
+  pointer-events: none;
+  z-index: 1;
+}
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(168, 166, 159, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 166, 159, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#webglHost {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  touch-action: none;
+  cursor: grab;
+}
+#webglHost:active { cursor: grabbing; }
+#webglHost canvas { display: block; width: 100%; height: 100%; }
+
+.stage-overlay {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  z-index: 5;
+  pointer-events: none;
+}
+.stage-code {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--n-6);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.stage-title {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  font-weight: 500;
+  color: var(--n-10);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.stage-subtitle {
+  font-size: 0.85rem;
+  color: var(--n-7);
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.toolbar {
+  position: absolute;
+  top: 28px;
+  right: 32px;
+  z-index: 5;
+  display: flex;
+  gap: 2px;
+  padding: 5px;
+  background: rgba(250, 249, 246, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--n-4);
+  border-radius: var(--r-xl);
+  box-shadow: var(--whisper);
+}
+.tool {
+  padding: 7px 12px;
+  border-radius: var(--r-md);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--n-7);
+  transition: all 0.18s var(--ease-out);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.01em;
+}
+.tool:hover { background: var(--n-3); color: var(--n-9); }
+.tool.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.tool-icon { font-size: 0.95rem; line-height: 1; }
+
+.pins {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.pin {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+  transform: translate(-12px, -50%);
+  transition: opacity 0.3s var(--ease-out);
+}
+.pin-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--n-1);
+  box-shadow: 0 0 0 1px var(--accent-border), 0 2px 6px var(--accent-glow);
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-out);
+  position: relative;
+}
+.pin-dot::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  opacity: 0;
+  animation: pinRipple 1.8s var(--ease-out) infinite;
+}
+@keyframes pinRipple {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.pin:hover .pin-dot, .pin.active .pin-dot {
+  transform: scale(1.35);
+}
+.pin.active .pin-dot::after { opacity: 1; }
+.pin-label {
+  padding: 5px 11px;
+  background: rgba(250, 249, 246, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--n-4);
+  border-radius: var(--r-md);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--n-9);
+  white-space: nowrap;
+  box-shadow: var(--whisper);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all 0.2s var(--ease-out);
+  pointer-events: none;
+}
+.pin:hover .pin-label, .pin.active .pin-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+.pin.active .pin-label {
+  background: var(--accent);
+  color: var(--n-1);
+  border-color: var(--accent);
+}
+
+.stage-footer {
+  position: absolute;
+  bottom: 22px;
+  left: 32px;
+  right: 32px;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--n-6);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+.stage-footer span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.stage-footer span::before {
+  content: "";
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--n-5);
+  opacity: 0.6;
+}

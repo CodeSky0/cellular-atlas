@@ -1,0 +1,21 @@
+{
+  "name": "cellular-atlas",
+  "version": "1.0.0",
+  "description": "细胞形态图谱 · 高中生物 3D 实验室",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "typescript": "^5.6.0",
+    "vite": "^8.0.0"
+  }
+}

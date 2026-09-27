@@ -1,0 +1,26 @@
+#loader {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: var(--n-1);
+  transition: opacity 0.5s var(--ease-out);
+}
+#loader[hidden] { display: none; }
+.loader-content { text-align: center; }
+.spinner {
+  width: 28px; height: 28px;
+  margin: 0 auto 18px;
+  border: 2px solid var(--n-3);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.loader-text {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--n-6);
+  letter-spacing: 0.06em;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

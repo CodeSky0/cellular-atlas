@@ -1,0 +1,13 @@
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 240px 1fr 300px; }
+  .topbar, .stage-overlay, .toolbar, .stage-footer, .detail { padding-left: 24px; padding-right: 24px; }
+}
+@media (max-width: 820px) {
+  .app { height: auto; overflow: visible; }
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--n-4); }
+  .nav-list { flex-direction: row; overflow-x: auto; padding: 16px; gap: 12px; }
+  .nav-item { flex: 0 0 auto; min-width: 200px; }
+  .stage { height: 60vh; min-height: 400px; }
+  .detail { border-left: none; border-top: 1px solid var(--n-4); }
+}

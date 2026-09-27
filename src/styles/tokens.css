@@ -1,0 +1,48 @@
+:root {
+  /* Neutral Tiers (Warm) */
+  --n-1: #FAF9F6; /* Paper / Base */
+  --n-2: #F1F0EC; /* Card / Surface */
+  --n-3: #E4E2DC; /* Hover / Micro-fill */
+  --n-4: #D2D0C8; /* Strong Fill */
+  --n-5: #AAA8A1; /* Border (No text) */
+  --n-6: #7A7872; /* Icon / Small Label */
+  --n-7: #5E5C57; /* Secondary Text */
+  --n-8: #42413C; /* Strong Secondary */
+  --n-9: #262521; /* Body Text */
+  --n-10: #151413; /* Heading */
+
+  /* Accent: Ume (refined) */
+  --accent: #C56473;
+  --accent-deep: #A84A59;
+  --accent-soft: rgba(197, 100, 115, 0.08);
+  --accent-mid: rgba(197, 100, 115, 0.14);
+  --accent-border: rgba(197, 100, 115, 0.32);
+  --accent-glow: rgba(197, 100, 115, 0.18);
+
+  /* Semantic */
+  --info: #3D6896;
+  --success: #5E9F7E;
+  --warning: #A87A3D;
+  --error: #A64953;
+
+  /* Typography */
+  --font-sans: 'Inter', 'pingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-serif: 'Noto Serif SC', 'Source Han Serif', 'SongTi SC', 'Georgia', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Radius & Depth */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 12px;
+  --r-2xl: 16px;
+  --r-3xl: 20px;
+  --ring: 0 0 0 1px var(--n-4);
+  --whisper: 0 2px 8px rgba(36, 35, 31, 0.04), 0 8px 28px rgba(36, 35, 31, 0.05);
+  --whisper-lg: 0 4px 12px rgba(36, 35, 31, 0.06), 0 16px 40px rgba(36, 35, 31, 0.07);
+  --inset-hi: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>细胞形态图谱 · 高中生物 3D 实验室</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <h1>细胞形态图谱</h1>
+      <span>CELLULAR ATLAS</span>
+    </div>
+    <div class="top-meta">
+      <span>高中生物 · 必修一</span>
+      <span class="badge">3D INTERACTIVE</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>样本库</h2>
+        <p>SPECIMEN LIBRARY</p>
+      </div>
+      <nav class="nav-list" id="cellNav"></nav>
+      <div class="sidebar-footer">
+        <strong>观察提示</strong>
+        拖动旋转模型，滚轮缩放。点击右侧结构列表或模型上的标记点，探索细胞器形态与功能的适应关系。
+      </div>
+    </aside>
+
+    <main class="stage" id="stage">
+      <div id="webglHost" tabindex="0"></div>
+
+      <div class="stage-overlay">
+        <div class="stage-code" id="stageCode">SPECIMEN 01 / 04</div>
+        <h2 class="stage-title" id="stageTitle">神经元</h2>
+        <div class="stage-subtitle" id="stageSubtitle">Multipolar Neuron</div>
+      </div>
+
+      <div class="toolbar" role="toolbar">
+        <button class="tool active" id="spinBtn" type="button" aria-pressed="true"><span class="tool-icon">↻</span> 自动旋转</button>
+        <button class="tool" id="xrayBtn" type="button" aria-pressed="false"><span class="tool-icon">◐</span> 透视</button>
+        <button class="tool" id="wireBtn" type="button" aria-pressed="false"><span class="tool-icon">⌗</span> 网格</button>
+        <button class="tool" id="resetBtn" type="button"><span class="tool-icon">⌖</span> 复位</button>
+      </div>
+
+      <div class="pins" id="pins"></div>
+
+      <div class="stage-footer">
+        <span>拖动旋转 · 滚轮缩放 · 右键平移</span>
+        <span>方向键切换样本</span>
+      </div>
+
+      <div id="loader" role="status">
+        <div class="loader-content">
+          <div class="spinner"></div>
+          <div class="loader-text">正在构建细胞模型…</div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="detail" id="detail">
+      <div class="detail-meta">
+        <span>SPECIMEN PROFILE</span>
+        <span id="specimenNo">01 / 04</span>
+      </div>
+      <h2 id="cellTitle">—</h2>
+      <div class="detail-english" id="cellEnglish">—</div>
+      <div class="detail-scale" id="cellScale">—</div>
+      <p class="detail-desc" id="cellDescription"></p>
+
+      <div class="divider"></div>
+
+      <div class="section-header">
+        <span class="section-title">结构观察</span>
+        <span class="section-sub">点击定位与解读</span>
+      </div>
+      <div class="features" id="featureList"></div>
+
+      <div class="feature-detail" aria-live="polite">
+        <h4 id="featureTitle">—</h4>
+        <p id="featureDescription"></p>
+      </div>
+
+      <div class="concept">
+        <div class="concept-label">Structure × Function / 结构与功能</div>
+        <p id="cellConcept"></p>
+      </div>
+
+      <div class="disclaimer">
+        注：这是突出关键结构的教学示意模型。不同细胞分别调整了展示大小，细胞器和微细结构也可能为便于观察而适度放大。
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

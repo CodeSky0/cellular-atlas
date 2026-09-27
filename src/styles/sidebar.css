@@ -1,0 +1,112 @@
+.sidebar {
+  background: var(--n-2);
+  border-right: 1px solid var(--n-4);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-header {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--n-3);
+  position: relative;
+}
+.sidebar-header h2 {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--n-10);
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+.sidebar-header p {
+  font-size: 0.7rem;
+  color: var(--n-6);
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+}
+
+.nav-list {
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-lg);
+  text-align: left;
+  transition: all 0.22s var(--ease-out);
+  width: 100%;
+  position: relative;
+}
+.nav-item:hover {
+  background: var(--n-3);
+}
+.nav-item.active {
+  background: var(--n-1);
+  border-color: var(--accent-border);
+  box-shadow: var(--whisper);
+}
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+.nav-index {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--n-6);
+  width: 18px;
+  letter-spacing: 0.04em;
+}
+.nav-item.active .nav-index { color: var(--accent); font-weight: 500; }
+.nav-content { flex: 1; min-width: 0; }
+.nav-title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--n-9);
+  margin-bottom: 2px;
+  transition: color 0.2s;
+}
+.nav-item.active .nav-title { color: var(--n-10); }
+.nav-sub {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--n-6);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px 24px;
+  border-top: 1px solid var(--n-3);
+  font-size: 0.8rem;
+  color: var(--n-7);
+  line-height: 1.65;
+}
+.sidebar-footer strong {
+  display: block;
+  color: var(--n-9);
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
