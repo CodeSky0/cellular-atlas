@@ -163,7 +163,8 @@ export class CellularAtlasApp {
       onReset: () => {
         this.orbit.targetTheta = 0.25;
         this.orbit.targetPhi = 1.13;
-        fitCell(this.orbit, camera, this.entities[this.state.next ?? this.state.id]!.size);
+        const ent = this.entities[this.state.next ?? this.state.id];
+        if (ent) fitCell(this.orbit, camera, ent.size);
       },
     });
 
@@ -175,8 +176,9 @@ export class CellularAtlasApp {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
-      if (this.state.id) {
-        fitCell(this.orbit, camera, this.entities[this.state.id]!.size);
+      const ent = this.entities[this.state.id];
+      if (ent) {
+        fitCell(this.orbit, camera, ent.size);
       }
     };
     if (typeof ResizeObserver !== 'undefined') {
