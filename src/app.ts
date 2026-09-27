@@ -15,42 +15,6 @@ const reduceMotion =
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-async function buildEntities(
-  scene: THREE.Scene,
-  onProgress: (loaded: number, total: number) => void,
-): Promise<Record<string, CellEntity>> {
-  const entities: Record<string, CellEntity> = {};
-  const total = CELLS.length;
-  let completed = 0;
-
-  await Promise.all(
-    CELLS.map(async (cell) => {
-      const model = await loadGLTF(cell.modelUrl);
-      const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      model.position.sub(center);
-
-      const wrapper = new THREE.Group();
-      wrapper.visible = false;
-      wrapper.add(model);
-      scene.add(wrapper);
-
-      const shells: ShellMesh[] = [];
-      const wires: WireMesh[] = [];
-      model.traverse((obj) => {
-        if (obj.userData.shellOpacity !== undefined) shells.push(obj as ShellMesh);
-        if (obj.userData.isWire) wires.push(obj as WireMesh);
-      });
-      entities[cell.id] = { wrapper, model, size, shells, wires };
-      completed++;
-      onProgress(completed, total);
-    }),
-  );
-
-  return entities;
-}
-
 function fitCell(orbit: OrbitState, camera: THREE.PerspectiveCamera, size: THREE.Vector3): void {
   const aspect = Math.max(0.5, camera.aspect);
   const neededWidth = (size.x * 0.98 + size.z * 0.32) / aspect;
@@ -192,17 +156,79 @@ export class CellularAtlasApp {
   }
 
   private resize: () => void = () => {};
+  private loading = false;
 
-  private switchCell(id: string): void {
+  private updateLoaderText(text: string): void {
+    const loaderText = this.els.loader.querySelector<HTMLElement>('.loader-text');
+    if (loaderText) loaderText.textContent = text;
+  }
+
+  private showLoader(text: string): void {
+    this.els.loader.hidden = false;
+    this.els.loader.style.opacity = '1';
+    this.updateLoaderText(text);
+  }
+
+  private hideLoader(): void {
+    this.els.loader.style.opacity = '0';
+    setTimeout(() => {
+      this.els.loader.hidden = true;
+    }, 400);
+  }
+
+  private async loadEntity(cellId: string): Promise<CellEntity | null> {
+    const existing = this.entities[cellId];
+    if (existing) return existing;
+
+    const cell = CELLS.find((c) => c.id === cellId);
+    if (!cell) return null;
+
+    const model = await loadGLTF(cell.modelUrl, (loaded, total) => {
+      const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
+      this.updateLoaderText(`加载 ${cell.name}… ${pct}%`);
+    });
+
+    const box = new THREE.Box3().setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    model.position.sub(center);
+
+    const wrapper = new THREE.Group();
+    wrapper.visible = false;
+    wrapper.add(model);
+    this.sceneCtx.scene.add(wrapper);
+
+    const shells: ShellMesh[] = [];
+    const wires: WireMesh[] = [];
+    model.traverse((obj) => {
+      if (obj.userData.shellOpacity !== undefined) shells.push(obj as ShellMesh);
+      if (obj.userData.isWire) wires.push(obj as WireMesh);
+    });
+
+    const entity: CellEntity = { wrapper, model, size, shells, wires };
+    this.entities[cellId] = entity;
+    return entity;
+  }
+
+  private async switchCell(id: string): Promise<void> {
     if (id === this.state.id && this.state.phase === 'idle') return;
+    if (this.loading) return;
+    const cell = CELLS.find((c) => c.id === id);
+    if (!cell) return;
+
+    if (!this.entities[id]) {
+      this.loading = true;
+      this.showLoader(`加载 ${cell.name}…`);
+      await this.loadEntity(id);
+      this.loading = false;
+      this.hideLoader();
+    }
+
     this.state.next = id;
     this.state.phase = 'out';
-    const cell = CELLS.find((c) => c.id === id);
-    if (cell) {
-      const index = CELLS.indexOf(cell);
-      this.info.renderInfo(cell, index);
-      setActiveNav(this.els.navEl, id);
-    }
+    const index = CELLS.indexOf(cell);
+    this.info.renderInfo(cell, index);
+    setActiveNav(this.els.navEl, id);
   }
 
   private onKeydown(e: KeyboardEvent): void {
@@ -240,8 +266,10 @@ export class CellularAtlasApp {
           this.state.next = null;
         }
         const nextEnt = this.entities[this.state.id];
-        if (nextEnt) nextEnt.wrapper.visible = true;
-        fitCell(this.orbit, camera, this.entities[this.state.id]!.size);
+        if (nextEnt) {
+          nextEnt.wrapper.visible = true;
+          fitCell(this.orbit, camera, nextEnt.size);
+        }
         this.state.phase = 'in';
       }
     } else if (this.state.phase === 'in') {
@@ -279,25 +307,23 @@ export class CellularAtlasApp {
   };
 
   async start(): Promise<void> {
-    const loaderText = this.els.loader.querySelector<HTMLElement>('.loader-text');
-    this.entities = await buildEntities(this.sceneCtx.scene, (loaded, total) => {
-      if (loaderText) loaderText.textContent = `加载模型 ${loaded}/${total}…`;
-    });
+    const firstCell = CELLS[0]!;
+    this.updateLoaderText(`加载 ${firstCell.name}…`);
+    const firstEntity = await this.loadEntity(firstCell.id);
+    if (!firstEntity) {
+      this.showError('首个模型加载失败');
+      return;
+    }
 
     this.resize();
-    const firstEnt = this.entities[this.state.id];
-    if (firstEnt) firstEnt.wrapper.visible = true;
-    const firstCell = CELLS[0]!;
+    firstEntity.wrapper.visible = true;
     this.info.renderInfo(firstCell, 0);
     setActiveNav(this.els.navEl, firstCell.id);
     this.orbit.distance = this.orbit.targetDistance;
     applyModes(this.entities, this.state);
     this.tick();
 
-    this.els.loader.style.opacity = '0';
-    setTimeout(() => {
-      this.els.loader.hidden = true;
-    }, 400);
+    this.hideLoader();
   }
 
   showError(message: string): void {
