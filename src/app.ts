@@ -8,34 +8,46 @@ import { buildNav, setActiveNav } from './ui/nav.ts';
 import { createInfoController } from './ui/info.ts';
 import { createToolbarController, stopSpin } from './ui/toolbar.ts';
 import { vec } from './three/geometry.ts';
+import { loadGLTF } from './three/loader.ts';
 
 const reduceMotion =
   typeof window !== 'undefined' &&
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function buildEntities(scene: THREE.Scene): Record<string, CellEntity> {
+async function buildEntities(
+  scene: THREE.Scene,
+  onProgress: (loaded: number, total: number) => void,
+): Promise<Record<string, CellEntity>> {
   const entities: Record<string, CellEntity> = {};
-  for (const cell of CELLS) {
-    const model = cell.builder();
-    const box = new THREE.Box3().setFromObject(model);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
-    model.position.sub(center);
+  const total = CELLS.length;
+  let completed = 0;
 
-    const wrapper = new THREE.Group();
-    wrapper.visible = false;
-    wrapper.add(model);
-    scene.add(wrapper);
+  await Promise.all(
+    CELLS.map(async (cell) => {
+      const model = await loadGLTF(cell.modelUrl);
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      model.position.sub(center);
 
-    const shells: ShellMesh[] = [];
-    const wires: WireMesh[] = [];
-    model.traverse((obj) => {
-      if (obj.userData.shellOpacity !== undefined) shells.push(obj as ShellMesh);
-      if (obj.userData.isWire) wires.push(obj as WireMesh);
-    });
-    entities[cell.id] = { wrapper, model, size, shells, wires };
-  }
+      const wrapper = new THREE.Group();
+      wrapper.visible = false;
+      wrapper.add(model);
+      scene.add(wrapper);
+
+      const shells: ShellMesh[] = [];
+      const wires: WireMesh[] = [];
+      model.traverse((obj) => {
+        if (obj.userData.shellOpacity !== undefined) shells.push(obj as ShellMesh);
+        if (obj.userData.isWire) wires.push(obj as WireMesh);
+      });
+      entities[cell.id] = { wrapper, model, size, shells, wires };
+      completed++;
+      onProgress(completed, total);
+    }),
+  );
+
   return entities;
 }
 
@@ -116,7 +128,7 @@ function positionPins(
 export class CellularAtlasApp {
   private readonly els = getElements();
   private readonly sceneCtx = createScene(this.els.host);
-  private readonly entities = buildEntities(this.sceneCtx.scene);
+  private entities: Record<string, CellEntity> = {};
   private readonly orbit = createOrbit();
   private readonly state: AppState = {
     id: CELLS[0]!.id,
@@ -264,7 +276,12 @@ export class CellularAtlasApp {
     renderer.render(scene, camera);
   };
 
-  start(): void {
+  async start(): Promise<void> {
+    const loaderText = this.els.loader.querySelector<HTMLElement>('.loader-text');
+    this.entities = await buildEntities(this.sceneCtx.scene, (loaded, total) => {
+      if (loaderText) loaderText.textContent = `加载模型 ${loaded}/${total}…`;
+    });
+
     this.resize();
     const firstEnt = this.entities[this.state.id];
     if (firstEnt) firstEnt.wrapper.visible = true;

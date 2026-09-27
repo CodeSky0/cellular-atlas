@@ -1,8 +1,4 @@
 import type { Cell } from '../types/index.ts';
-import { buildCardiac } from '../three/builders/cardiac.ts';
-import { buildEnterocyte } from '../three/builders/enterocyte.ts';
-import { buildNeuron } from '../three/builders/neuron.ts';
-import { buildRBC } from '../three/builders/rbc.ts';
 
 export const CELLS: readonly Cell[] = [
   {
@@ -14,7 +10,7 @@ export const CELLS: readonly Cell[] = [
       '多极神经元由胞体、多条树突和一条轴突组成。树突接收输入，轴突传出信号；此模型以外周神经的施万细胞髓鞘为例，末梢含突触小泡。',
     concept:
       '分支树突扩大接收范围；髓鞘与朗飞氏结使动作电位沿轴突跳跃式传导。尼氏体位于胞体和树突，不延伸至轴丘及轴突；突触小泡储存神经递质。',
-    builder: buildNeuron,
+    modelUrl: '/models/neuron.glb',
     parts: [
       {
         name: '胞体与尼氏体',
@@ -47,7 +43,7 @@ export const CELLS: readonly Cell[] = [
       '心肌细胞通常较短、可分支，以闰盘与相邻细胞连接。此处着重表现肌原纤维的横纹、居中的细胞核，以及丰富的线粒体，并示意肌浆网与横管系统。',
     concept:
       '肌节支持有力收缩；线粒体为持续活动供能；闰盘中的机械连接和缝隙连接帮助相邻心肌细胞保持结构完整并协调兴奋传播；横管与肌浆网实现钙信号的快速传导。',
-    builder: buildCardiac,
+    modelUrl: '/models/cardiac.glb',
     parts: [
       {
         name: '肌节横纹',
@@ -80,7 +76,7 @@ export const CELLS: readonly Cell[] = [
       '哺乳动物成熟红细胞呈柔韧的双凹圆盘状，中央薄、周缘较厚；成熟时失去细胞核及大多数细胞器，富含血红蛋白。模型中可见多个红细胞，部分以缗钱状排列。',
     concept:
       '双凹形态增加相对于体积的表面积，并使中央区域较薄，有利于气体交换；柔韧的细胞膜有助于通过狭窄毛细血管；缗钱状聚集是血浆蛋白介导的正常现象。',
-    builder: buildRBC,
+    modelUrl: '/models/rbc.glb',
     parts: [
       {
         name: '中央凹陷',
@@ -113,7 +109,7 @@ export const CELLS: readonly Cell[] = [
       '小肠上皮的柱状吸收细胞。顶端面密集的微绒毛形成刷状缘；细胞核偏向基底部，核上方有高尔基体，胞质中可见内质网、线粒体与溶酶体。',
     concept:
       '微绒毛显著扩大吸收表面积；靠顶端的细胞间连接维持屏障；高尔基体与内质网参与蛋白质加工分拣；基底侧与基膜相邻，共同体现吸收与屏障功能。',
-    builder: buildEnterocyte,
+    modelUrl: '/models/enterocyte.glb',
     parts: [
       {
         name: '微绒毛刷状缘',

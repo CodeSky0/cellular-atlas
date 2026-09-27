@@ -8,8 +8,6 @@ export type CellPart = {
   readonly text: string;
 };
 
-export type CellBuilder = () => THREE.Group;
-
 export type Cell = {
   readonly id: string;
   readonly name: string;
@@ -17,7 +15,7 @@ export type Cell = {
   readonly scale: string;
   readonly description: string;
   readonly concept: string;
-  readonly builder: CellBuilder;
+  readonly modelUrl: string;
   readonly parts: readonly CellPart[];
 };
 
@@ -79,8 +77,4 @@ export type Gesture = {
   y: number;
 } | null;
 
-export const ACCENT_COLOR = 0xc56473;
 export const PAPER_COLOR = 0xf9f8f5;
-export const SURFACE_COLOR = 0xf0efeb;
-export const WIRE_COLOR = 0xa8a69f;
-export const SHELL_WIRE_COLOR = 0xd0cec6;

@@ -3,7 +3,7 @@ import { CellularAtlasApp } from './app.ts';
 
 try {
   const app = new CellularAtlasApp();
-  app.start();
+  await app.start();
 } catch (error) {
   console.error('Cell Atlas Init Error:', error);
   const loader = document.getElementById('loader');
