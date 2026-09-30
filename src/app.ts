@@ -183,7 +183,7 @@ export class CellularAtlasApp {
     const cell = CELLS.find((c) => c.id === cellId);
     if (!cell) return null;
 
-    const model = await loadGLTF(cell.modelUrl, (loaded, total) => {
+    const model = await loadGLTF(cell.modelUrl, this.sceneCtx.renderer, (loaded, total) => {
       const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
       this.updateLoaderText(`加载 ${cell.name}… ${pct}%`);
     });
