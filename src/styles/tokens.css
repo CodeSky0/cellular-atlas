@@ -1,48 +1,141 @@
+/* ============================================================================
+   Cellular Atlas · 设计令牌
+   ----------------------------------------------------------------------------
+   两套主题共用一套语义变量：
+     · :root                → 深色主题「深夜实验室」（默认）
+     · [data-theme="light"] → 浅色主题「纸上图鉴」
+   样本色 --tint 由 JS 按当前细胞写入，派生色统一用 color-mix 生成。
+   ============================================================================ */
+
 :root {
-  /* Neutral Tiers (Warm) */
-  --n-1: #FAF9F6; /* Paper / Base */
-  --n-2: #F1F0EC; /* Card / Surface */
-  --n-3: #E4E2DC; /* Hover / Micro-fill */
-  --n-4: #D2D0C8; /* Strong Fill */
-  --n-5: #AAA8A1; /* Border (No text) */
-  --n-6: #7A7872; /* Icon / Small Label */
-  --n-7: #5E5C57; /* Secondary Text */
-  --n-8: #42413C; /* Strong Secondary */
-  --n-9: #262521; /* Body Text */
-  --n-10: #151413; /* Heading */
+  color-scheme: dark;
 
-  /* Accent: Ume (refined) */
-  --accent: #C56473;
-  --accent-deep: #A84A59;
-  --accent-soft: rgba(197, 100, 115, 0.08);
-  --accent-mid: rgba(197, 100, 115, 0.14);
-  --accent-border: rgba(197, 100, 115, 0.32);
-  --accent-glow: rgba(197, 100, 115, 0.18);
+  /* ---------- 背景层级 ---------- */
+  --bg-app: #08090d;
+  --bg-stage: #06070a;
+  --bg-panel: #0b0d12;
+  --bg-panel-2: #10131a;
+  --bg-raised: #171a22;
+  --bg-glass: rgba(12, 14, 19, 0.66);
+  --bg-glass-2: rgba(17, 20, 27, 0.82);
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-active: rgba(255, 255, 255, 0.08);
+  --bg-sunken: rgba(0, 0, 0, 0.3);
 
-  /* Semantic */
-  --info: #3D6896;
-  --success: #5E9F7E;
-  --warning: #A87A3D;
-  --error: #A64953;
+  /* ---------- 文字层级 ---------- */
+  --fg-1: #eef1f6;
+  --fg-2: #a7adbb;
+  --fg-3: #767c8b;
+  --fg-4: #545a68;
 
-  /* Typography */
-  --font-sans: 'Inter', 'pingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
-  --font-serif: 'Noto Serif SC', 'Source Han Serif', 'SongTi SC', 'Georgia', serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  /* ---------- 线条 ---------- */
+  --line-1: rgba(255, 255, 255, 0.06);
+  --line-2: rgba(255, 255, 255, 0.11);
+  --line-3: rgba(255, 255, 255, 0.2);
 
-  /* Radius & Depth */
-  --r-sm: 4px;
-  --r-md: 6px;
-  --r-lg: 8px;
-  --r-xl: 12px;
-  --r-2xl: 16px;
-  --r-3xl: 20px;
-  --ring: 0 0 0 1px var(--n-4);
-  --whisper: 0 2px 8px rgba(36, 35, 31, 0.04), 0 8px 28px rgba(36, 35, 31, 0.05);
-  --whisper-lg: 0 4px 12px rgba(36, 35, 31, 0.06), 0 16px 40px rgba(36, 35, 31, 0.07);
-  --inset-hi: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  /* ---------- 强调色 ---------- */
+  --accent: #f2829b;
+  --accent-deep: #d95c77;
+  --tint: #9c8bff;
+  --on-accent: #0a0b10;
 
-  /* Motion */
+  /* ---------- 氛围 ---------- */
+  --grid-line: rgba(255, 255, 255, 0.045);
+  --hud-line: rgba(255, 255, 255, 0.17);
+  --glow-1: rgba(126, 98, 255, 0.18);
+  --glow-2: rgba(242, 130, 155, 0.13);
+  --vignette: rgba(0, 0, 0, 0.5);
+  --haze: rgba(255, 255, 255, 0.022);
+  --noise-opacity: 0.055;
+
+  /* ---------- 阴影与质感 ---------- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45), 0 4px 14px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.45), 0 16px 40px rgba(0, 0, 0, 0.42);
+  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.5), 0 30px 80px rgba(0, 0, 0, 0.55);
+  --inset-hi: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --inset-lo: inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+  --glass-blur: 18px;
+
+  /* ---------- 派生色（跟随 --tint / --accent） ---------- */
+  --tint-soft: color-mix(in srgb, var(--tint) 13%, transparent);
+  --tint-mid: color-mix(in srgb, var(--tint) 24%, transparent);
+  --tint-line: color-mix(in srgb, var(--tint) 45%, transparent);
+  --tint-glow: color-mix(in srgb, var(--tint) 34%, transparent);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
+  --accent-mid: color-mix(in srgb, var(--accent) 24%, transparent);
+  --accent-line: color-mix(in srgb, var(--accent) 45%, transparent);
+  --accent-glow: color-mix(in srgb, var(--accent) 32%, transparent);
+
+  /* ---------- 字体 ---------- */
+  --font-sans: "Inter", "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", "Fira Code", Consolas, monospace;
+
+  /* ---------- 圆角 ---------- */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 9px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 20px;
+  --r-pill: 999px;
+
+  /* ---------- 动效 ---------- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --dur-1: 0.16s;
+  --dur-2: 0.28s;
+  --dur-3: 0.5s;
+
+  /* ---------- 布局尺度 ---------- */
+  --pad-x: 30px;
+  --topbar-h: 62px;
+}
+
+/* ============================================================================
+   浅色主题「纸上图鉴」
+   ============================================================================ */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-app: #f0efeb;
+  --bg-stage: #fcfbf8;
+  --bg-panel: #f3f2ee;
+  --bg-panel-2: #edece7;
+  --bg-raised: #ffffff;
+  --bg-glass: rgba(250, 249, 246, 0.78);
+  --bg-glass-2: rgba(255, 255, 255, 0.88);
+  --bg-hover: rgba(28, 27, 24, 0.045);
+  --bg-active: rgba(28, 27, 24, 0.075);
+  --bg-sunken: rgba(28, 27, 24, 0.04);
+
+  --fg-1: #16171a;
+  --fg-2: #4f5058;
+  --fg-3: #7d7e86;
+  --fg-4: #9b9ca3;
+
+  --line-1: rgba(28, 27, 24, 0.08);
+  --line-2: rgba(28, 27, 24, 0.14);
+  --line-3: rgba(28, 27, 24, 0.26);
+
+  --accent: #c05f70;
+  --accent-deep: #a2485a;
+  --tint: #6f5fd8;
+  --on-accent: #ffffff;
+
+  --grid-line: rgba(28, 27, 24, 0.07);
+  --hud-line: rgba(28, 27, 24, 0.2);
+  --glow-1: rgba(111, 95, 216, 0.14);
+  --glow-2: rgba(192, 95, 112, 0.12);
+  --vignette: rgba(60, 58, 52, 0.16);
+  --haze: rgba(255, 255, 255, 0.55);
+  --noise-opacity: 0.028;
+
+  --shadow-sm: 0 1px 2px rgba(36, 34, 30, 0.05), 0 3px 10px rgba(36, 34, 30, 0.05);
+  --shadow-md: 0 2px 6px rgba(36, 34, 30, 0.06), 0 14px 34px rgba(36, 34, 30, 0.08);
+  --shadow-lg: 0 6px 16px rgba(36, 34, 30, 0.08), 0 26px 60px rgba(36, 34, 30, 0.1);
+  --inset-hi: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --inset-lo: inset 0 -1px 0 rgba(28, 27, 24, 0.05);
+  --glass-blur: 14px;
 }

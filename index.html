@@ -1,24 +1,56 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#06070a" />
+  <meta name="description" content="高中生物 3D 细胞形态图谱：神经元、心肌细胞、成熟红细胞、小肠吸收细胞的可交互形态观察。" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>细胞形态图谱 · 高中生物 3D 实验室</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('atlas-theme');
+        document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <div class="brand">
-      <div class="brand-mark"></div>
-      <h1>细胞形态图谱</h1>
-      <span>CELLULAR ATLAS</span>
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <h1>细胞形态图谱</h1>
+        <span class="brand-sub">Cellular Atlas</span>
+      </span>
     </div>
     <div class="top-meta">
-      <span>高中生物 · 必修一</span>
+      <span class="meta-item">高中生物 · 必修一</span>
       <span class="badge">3D INTERACTIVE</span>
+      <button
+        class="theme-toggle"
+        id="themeToggle"
+        type="button"
+        role="switch"
+        aria-checked="true"
+        aria-label="切换深色 / 浅色主题"
+        title="切换主题"
+      >
+        <span class="tt-icon tt-moon" aria-hidden="true">☾</span>
+        <span class="tt-icon tt-sun" aria-hidden="true">☀</span>
+        <span class="tt-thumb" aria-hidden="true"></span>
+      </button>
     </div>
   </header>
 
@@ -26,76 +58,199 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <h2>样本库</h2>
-        <p>SPECIMEN LIBRARY</p>
+        <p>Specimen Library</p>
       </div>
-      <nav class="nav-list" id="cellNav"></nav>
+      <nav class="nav-list" id="cellNav" aria-label="样本列表"></nav>
       <div class="sidebar-footer">
         <strong>观察提示</strong>
-        拖动旋转模型，滚轮缩放。点击右侧结构列表或模型上的标记点，探索细胞器形态与功能的适应关系。
+        <p>拖动旋转模型，滚轮缩放，右键平移。点击右侧结构列表，或模型上的标记点，观察细胞器形态与功能的适应关系。</p>
+        <ul class="shortcuts">
+          <li><span class="kbd">←</span><span class="kbd">→</span><span>切换样本</span></li>
+          <li><span class="kbd">滚动</span><span>缩放远近</span></li>
+          <li><span class="kbd">右键</span><span>平移视野</span></li>
+        </ul>
       </div>
     </aside>
 
     <main class="stage" id="stage">
-      <div id="webglHost" tabindex="0"></div>
+      <div class="stage-backdrop" aria-hidden="true">
+        <span class="bd-grid"></span>
+        <span class="bd-glow bd-glow--1"></span>
+        <span class="bd-glow bd-glow--2"></span>
+        <span class="bd-noise"></span>
+      </div>
+
+      <div id="webglHost" tabindex="0" role="img" aria-label="细胞三维模型视图"></div>
+
+      <div class="stage-atmos" aria-hidden="true"></div>
+
+      <div class="stage-hud" aria-hidden="true">
+        <span class="hud-corner hud-corner--tl"></span>
+        <span class="hud-corner hud-corner--tr"></span>
+        <span class="hud-corner hud-corner--bl"></span>
+        <span class="hud-corner hud-corner--br"></span>
+        <span class="hud-scan"></span>
+        <span class="hud-reticle"></span>
+      </div>
 
       <div class="stage-overlay">
-        <div class="stage-code" id="stageCode">SPECIMEN 01 / 04</div>
+        <div class="specimen-code" id="stageCode">SPECIMEN 01 / 04</div>
         <h2 class="stage-title" id="stageTitle">神经元</h2>
         <div class="stage-subtitle" id="stageSubtitle">Multipolar Neuron</div>
       </div>
 
-      <div class="toolbar" role="toolbar">
-        <button class="tool active" id="spinBtn" type="button" aria-pressed="true"><span class="tool-icon">↻</span> 自动旋转</button>
-        <button class="tool" id="xrayBtn" type="button" aria-pressed="false"><span class="tool-icon">◐</span> 透视</button>
-        <button class="tool" id="wireBtn" type="button" aria-pressed="false"><span class="tool-icon">⌗</span> 网格</button>
-        <button class="tool" id="resetBtn" type="button"><span class="tool-icon">⌖</span> 复位</button>
+      <div class="toolbar" role="toolbar" aria-label="视图工具" id="toolbar">
+        <button class="tool active" id="spinBtn" type="button" aria-pressed="true" title="自动旋转">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.5 4.4v4.8h-4.8"/></svg>
+          </span>
+          <span class="tool-text">自动旋转</span>
+        </button>
+        <button class="tool" id="resetBtn" type="button" title="复位视角">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6.6"/><path d="M12 2.4v3.4M12 18.2v3.4M2.4 12h3.4M18.2 12h3.4"/></svg>
+          </span>
+          <span class="tool-text">复位</span>
+        </button>
+        <span class="tool-sep" aria-hidden="true"></span>
+        <button class="tool" id="xrayBtn" type="button" aria-pressed="false" title="透视模式">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 0 0 17z" fill="currentColor" stroke="none"/></svg>
+          </span>
+          <span class="tool-text">透视</span>
+        </button>
+        <button class="tool" id="wireBtn" type="button" aria-pressed="false" title="网格模式">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/></svg>
+          </span>
+          <span class="tool-text">网格</span>
+        </button>
+        <button class="tool" id="clipBtn" type="button" aria-pressed="false" title="剖切面">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M3.9 15.4 20.1 8.6"/><path d="M4.3 15.1h5.9l9.5-4.2v8.9a3 3 0 0 1-3 3H7.3a3 3 0 0 1-3-3z" fill="currentColor" stroke="none" opacity=".5"/></svg>
+          </span>
+          <span class="tool-text">剖切</span>
+        </button>
+        <span class="tool-sep" aria-hidden="true"></span>
+        <button class="tool" id="linkBtn" type="button" aria-pressed="false" title="结构关联">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.6" cy="18.3" r="2.4"/><circle cx="18.4" cy="5.7" r="2.4"/><path d="M7.6 16.5C10.3 13.7 13.7 10.3 16.4 7.5"/></svg>
+          </span>
+          <span class="tool-text">关联</span>
+        </button>
+        <button class="tool" id="calloutBtn" type="button" aria-pressed="false" title="引线标注框">
+          <span class="tool-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9.6" y="3.8" width="10.9" height="7.4" rx="2.2"/><path d="M9.6 7.4 5.5 11.3"/><circle cx="4" cy="12.8" r="1.7"/></svg>
+          </span>
+          <span class="tool-text">标注</span>
+        </button>
       </div>
 
       <div class="pins" id="pins"></div>
+
+      <div class="callouts" id="callouts">
+        <svg class="callout-lines" id="calloutLines" aria-hidden="true"></svg>
+        <div class="callout-layer" id="calloutParts"></div>
+        <div class="callout-layer" id="calloutLinks"></div>
+      </div>
+
+      <div class="clip-panel" id="clipPanel" hidden>
+        <span class="clip-label">剖切深度</span>
+        <input
+          class="clip-range"
+          id="clipRange"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value="50"
+          aria-label="剖切深度"
+        />
+        <span class="clip-value" id="clipValue">50</span>
+      </div>
+
+      <div class="hud-stats" id="hudStats">
+        <div class="stat">
+          <span class="stat-key">顶点</span>
+          <span class="stat-value" id="statVerts">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-key">三角面</span>
+          <span class="stat-value" id="statFaces">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-key">材质</span>
+          <span class="stat-value" id="statMats">—</span>
+        </div>
+      </div>
+
+      <div class="hud-compass" aria-hidden="true">
+        <span class="compass-dial">
+          <span class="compass-n">N</span>
+          <i class="compass-needle" id="compassNeedle"></i>
+        </span>
+        <span class="zoom-readout">ZOOM <b class="zoom-value" id="zoomValue">100</b>%</span>
+      </div>
 
       <div class="stage-footer">
         <span>拖动旋转 · 滚轮缩放 · 右键平移</span>
         <span>方向键切换样本</span>
       </div>
 
-      <div id="loader" role="status">
-        <div class="loader-content">
-          <div class="spinner"></div>
-          <div class="loader-text">正在构建细胞模型…</div>
+      <div class="stage-sweep" id="stageSweep" aria-hidden="true"></div>
+
+      <div id="loader" role="status" aria-live="polite">
+        <div class="loader-inner">
+          <div class="loader-orbit" aria-hidden="true">
+            <span class="orbit-ring orbit-ring--1"></span>
+            <span class="orbit-ring orbit-ring--2"></span>
+            <span class="orbit-core"></span>
+            <span class="orbit-dot"></span>
+          </div>
+          <div class="loader-title" id="loaderTitle">正在构建细胞模型</div>
+          <div class="loader-sub" id="loaderSub">Specimen 01 · 神经元</div>
+          <div class="loader-progress"><i id="loaderBar"></i></div>
+          <div class="loader-meta">
+            <span id="loaderPhase">初始化渲染管线</span>
+            <span class="loader-pct" id="loaderPct">0%</span>
+          </div>
         </div>
       </div>
     </main>
 
     <aside class="detail" id="detail">
-      <div class="detail-meta">
-        <span>SPECIMEN PROFILE</span>
-        <span id="specimenNo">01 / 04</span>
-      </div>
-      <h2 id="cellTitle">—</h2>
-      <div class="detail-english" id="cellEnglish">—</div>
-      <div class="detail-scale" id="cellScale">—</div>
-      <p class="detail-desc" id="cellDescription"></p>
+      <div class="detail-bar"><i id="detailProgress"></i></div>
+      <div class="detail-body" id="detailBody">
+        <div class="detail-meta">
+          <span class="meta-tag">Specimen Profile</span>
+          <span class="meta-seq" id="specimenNo">01 / 04</span>
+        </div>
+        <h2 id="cellTitle">—</h2>
+        <div class="detail-english" id="cellEnglish">—</div>
+        <div class="detail-scale" id="cellScale">—</div>
+        <p class="detail-desc" id="cellDescription"></p>
 
-      <div class="divider"></div>
+        <div class="divider"></div>
 
-      <div class="section-header">
-        <span class="section-title">结构观察</span>
-        <span class="section-sub">点击定位与解读</span>
-      </div>
-      <div class="features" id="featureList"></div>
+        <div class="section-header">
+          <span class="section-title">结构观察</span>
+          <span class="section-sub">点击定位与解读</span>
+        </div>
+        <div class="features" id="featureList"></div>
 
-      <div class="feature-detail" aria-live="polite">
-        <h4 id="featureTitle">—</h4>
-        <p id="featureDescription"></p>
-      </div>
+        <div class="feature-detail" id="featureDetail" aria-live="polite">
+          <h4 id="featureTitle">—</h4>
+          <p id="featureDescription"></p>
+        </div>
 
-      <div class="concept">
-        <div class="concept-label">Structure × Function / 结构与功能</div>
-        <p id="cellConcept"></p>
-      </div>
+        <div class="concept">
+          <div class="concept-label">Structure × Function / 结构与功能</div>
+          <p id="cellConcept"></p>
+        </div>
 
-      <div class="disclaimer">
-        注：这是突出关键结构的教学示意模型。不同细胞分别调整了展示大小，细胞器和微细结构也可能为便于观察而适度放大。
+        <div class="disclaimer">
+          注：这是突出关键结构的教学示意模型。不同细胞分别调整了展示大小，细胞器和微细结构也可能为便于观察而适度放大。
+        </div>
       </div>
     </aside>
   </div>

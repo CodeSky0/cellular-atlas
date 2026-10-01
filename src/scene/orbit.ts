@@ -10,6 +10,7 @@ export function createOrbit(): OrbitState {
     targetTheta: 0.25,
     targetPhi: 1.13,
     targetDistance: 10,
+    fitDistance: 10,
     minDistance: 2,
     maxDistance: 50,
     focus: new THREE.Vector3(),

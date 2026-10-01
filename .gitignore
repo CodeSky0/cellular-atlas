@@ -6,3 +6,7 @@ dist/
 *.log
 .codeartsdoer/
 /*.glb
+.chrome-profile/
+preview/
+pick*.cjs
+

@@ -1,6 +1,17 @@
+/* ============================================================================
+   三栏骨架：样本库 · 观察台 · 档案
+   栏宽集中在此处，响应式断点仅需覆盖变量。
+   ============================================================================ */
+
+:root {
+  --w-sidebar: 296px;
+  --w-detail: 384px;
+}
+
 .layout {
+  position: relative;
   flex: 1;
   display: grid;
-  grid-template-columns: 280px 1fr 360px;
+  grid-template-columns: var(--w-sidebar) minmax(0, 1fr) var(--w-detail);
   min-height: 0;
 }
